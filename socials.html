@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayzn | Elite Digital Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #ff007f;
+            --accent-glow: rgba(255, 0, 127, 0.4);
+            --bg: #030303;
+            --card: #080809;
+            --border: rgba(255, 0, 127, 0.15);
+        }
+
+        ::-webkit-scrollbar { display: none; }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 127, 0.05), transparent),
+                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .profile-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 50px;
+            width: 500px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            position: relative;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-container::after {
+            content: "";
+            position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            padding: 5px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 20px var(--accent-glow));
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .avatar:hover { transform: scale(1.1) rotate(-5deg); }
+
+        h1 { font-size: 38px; font-weight: 900; margin: 0; letter-spacing: -1.5px; text-transform: uppercase; }
+        h1 b { color: var(--accent); }
+
+        .role-switcher {
+            font-family: 'JetBrains Mono', monospace;
+            color: #666;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 15px 0 35px 0;
+            line-height: 1.6;
+        }
+
+        .contact-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .contact-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 25px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            text-decoration: none;
+            color: #fff;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .contact-card:hover {
+            background: rgba(255, 0, 127, 0.08);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .contact-info { text-align: left; }
+        .contact-label { display: block; font-size: 10px; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .contact-value { font-size: 15px; font-weight: 700; color: #eee; }
+
+        .copy-hint { font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--accent); opacity: 0.6; text-transform: uppercase; }
+
+        .skills-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .skill-tag {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            color: #555;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .skill-tag b { color: #888; }
+        .skill-tag:hover { color: #fff; border-color: var(--accent); background: rgba(255, 0, 127, 0.05); }
+
+        .status {
+            position: absolute; top: 30px; right: 30px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 9px; font-weight: 900; color: #00ff88;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .dot { width: 6px; height: 6px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 10px #00ff88; animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        #copy-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 800;
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+        <div class="status"><div class="dot"></div> System Online</div>
+        
+        <img src="Asset_1.png" class="avatar" alt="Kayzn Logo">
+        
+        <h1>KAYZN<b>.</b></h1>
+        <div class="role-switcher">
+            Website Designer • VFX Artist<br>
+            <b>Elite FW & DMA Seller</b>
+        </div>
+
+        <div class="contact-grid">
+            <a href="javascript:void(0)" class="contact-card" onclick="copyToClipboard('scarlettmcdonald')">
+                <div class="contact-info">
+                    <span class="contact-label">Discord</span>
+                    <span class="contact-value">scarlettmcdonald</span>
+                </div>
+                <span class="copy-hint">Copy ID</span>
+            </a>
+
+            <a href="https://t.me/akenodks" target="_blank" class="contact-card">
+                <div class="contact-info">
+                    <span class="contact-label">Telegram</span>
+                    <span class="contact-value">@akenodks</span>
+                </div>
+                <span class="copy-hint">Open</span>
+            </a>
+        </div>
+
+        <div class="skills-container">
+            <div class="skill-tag"><b>EAC</b> Bypass</div>
+            <div class="skill-tag"><b>BE</b> Bypass</div>
+            <div class="skill-tag"><b>ACE</b> Bypass</div>
+            <div class="skill-tag">Custom Firmware</div>
+            <div class="skill-tag">DMA Hardware</div>
+            <div class="skill-tag">Motion Graphics</div>
+        </div>
+    </div>
+
+    <div id="copy-toast">Discord ID Copied to Clipboard</div>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copy-toast');
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 2000);
+            });
+        }
+    </script>
+
+</body>
+</html>

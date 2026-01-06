@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carbon | Disable Windows Defender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --accent: #ff007f;
+            --accent-glow: rgba(255, 0, 127, 0.2);
+            --text-main: #ffffff;
+            --text-dim: #888;
+            --card-bg: #070708;
+            --border: rgba(255, 0, 127, 0.15);
+            --blue-link: #3b82f6;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 60px 80px;
+            line-height: 1.7;
+            background-image: radial-gradient(circle at 0% 0%, rgba(255, 0, 127, 0.03) 0%, transparent 40%);
+        }
+
+        .container { max-width: 900px; }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+        h1 span { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+        h2 { font-size: 28px; margin-top: 60px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        h3 { font-size: 20px; color: var(--accent); margin-top: 40px; margin-bottom: 20px; }
+
+        .step-list { list-style: none; padding: 0; }
+        .step-item { margin-bottom: 15px; display: flex; gap: 15px; align-items: flex-start; }
+        .step-num { color: var(--accent); font-weight: 800; font-family: 'JetBrains Mono'; min-width: 25px; }
+
+        .media-container {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 25px 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .media-container img { width: 100%; display: block; opacity: 0.9; }
+
+        .link-box {
+            display: inline-flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: var(--blue-link);
+            text-decoration: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            transition: 0.3s;
+        }
+        .link-box:hover { border-color: var(--accent); background: rgba(255,0,127,0.05); }
+
+        b { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Disable <span>Windows Defender</span></h1>
+
+        <h3>Disable Windows Defender Manually</h3>
+        <div class="step-list">
+            <div class="step-item">
+                <span class="step-num">1.</span>
+                <div>Select <b>Start</b> and type "Windows Security"</div>
+            </div>
+            <div class="step-item">
+                <span class="step-num">2.</span>
+                <div>Select the <b>Windows Security app</b> from the search results, go to <b>Virus & threat protection</b>, then under Virus & threat protection settings select <b>Manage settings</b></div>
+            </div>
+            <div class="step-item">
+                <span class="step-num">3.</span>
+                <div>Switch <b>Real-time protection</b> to <b>Off</b></div>
+            </div>
+        </div>
+
+        <h3>Disable Windows Defender with dControl</h3>
+        
+        <a href="https://1747526905-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FIRlbgGEe6FZJRx7luQsK%2Fuploads%2FPzHvDvms4BIrjTrj326l%2FdControl.zip?alt=media&token=4ba74f9b-97ac-45cf-a26c-07b3817afcd8" class="link-box">
+            Download dControl.zip (447KB)
+        </a>
+
+        <div class="step-list" style="margin-top: 20px;">
+            <div class="step-item">
+                <span class="step-num">1.</span>
+                <div>Download <b>dControl</b> above</div>
+            </div>
+            <div class="step-item">
+                <span class="step-num">2.</span>
+                <div>Unzip the files</div>
+            </div>
+            <div class="step-item">
+                <span class="step-num">3.</span>
+                <div>Run <b>dControl.exe</b></div>
+            </div>
+            <div class="step-item">
+                <span class="step-num">4.</span>
+                <div>Disable Windows Defender</div>
+            </div>
+        </div>
+
+        <div class="media-container">
+            <img src="https://content.gitbook.com/content/Mahy4lFQYb5rf7TZw9lo/blobs/ccqvS8XrTOUoAhsbmBmP/image.png" alt="dControl Interface">
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flashing Your Bios | Carbon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030303;
+            --card-bg: #0b0b0c;
+            --accent: #ff007f;
+            --border: rgba(255, 0, 127, 0.1);
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --warning: #ffcc00;
+            --danger: #ff4b4b;
+            --info: #00a2ff;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        h1 { font-size: 32px; font-weight: 800; margin-bottom: 20px; color: #fff; }
+        h2 { font-size: 24px; color: var(--accent); margin-top: 40px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        h3 { font-size: 18px; color: #fff; margin-top: 30px; }
+
+        .hint {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+        }
+        .hint-info { background: rgba(0, 162, 255, 0.1); border: 1px solid var(--info); color: #80d4ff; }
+        .hint-warning { background: rgba(255, 204, 0, 0.1); border: 1px solid var(--warning); color: #ffe066; }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        /* Tabs System */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .tab-btn {
+            background: none; border: 1px solid var(--border); color: var(--text-dim);
+            padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+
+        code { font-family: 'JetBrains Mono', monospace; background: #1a1a1c; padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+        
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 0, 127, 0.1);
+            color: var(--accent);
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            margin-top: 15px;
+            border: 1px solid var(--accent);
+        }
+
+        mark { border-radius: 3px; padding: 0 4px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Flashing Your Bios</h1>
+
+        <div class="hint hint-info">
+            <span>⚠️ <b>Warning:</b> Incorrect BIOS flashing can damage your system. Proceed at your own risk. Ensure you have the correct BIOS version and a stable power source. Ask support for help if needed!</span>
+        </div>
+
+        <div class="card">
+            <h3>Identifying your Motherboard & System Information</h3>
+            <ol>
+                <li>Open <b>System Information</b> (type <code>msinfo32</code> in searchbar)</li>
+                <li>Find <mark style="background: rgba(255, 165, 0, 0.2); color: orange;">BaseBoard Product & Manufacturer</mark></li>
+                <li>Note <mark style="background: rgba(255, 75, 75, 0.2); color: #ff4b4b;">Bios Version/Date</mark></li>
+            </ol>
+            <div class="hint hint-warning">
+                <b>Note:</b> If your system-information is inaccurate/Unsure, please go to your UEFI/BIOS settings & Verify the information.
+            </div>
+        </div>
+
+        <h2>TUTORIAL FOR EACH MOTHERBOARD</h2>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'ASUS')">ASUS</button>
+            <button class="tab-btn" onclick="openTab(event, 'MSI')">MSI</button>
+            <button class="tab-btn" onclick="openTab(event, 'GIGABYTE')">GIGABYTE</button>
+            <button class="tab-btn" onclick="openTab(event, 'ASROCK')">ASROCK</button>
+        </div>
+
+        <div id="ASUS" class="tab-content active">
+            <div class="card">
+                <p><b>FIRST</b>, Download & Run this <a href="https://mega.nz/file/gtRVEQDT#5hHDR00CGiBPRDfLlPtlU21o7jJBrLOCPp3ka7llark" style="color:var(--accent)">tool</a>, do OPTION 1 or 2 (follow loader instructions) - [REQUIRED]</p>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
+                <h4>FLASH PROCESS</h4>
+                <ul>
+                    <li>Download a <mark style="background:rgba(255,75,75,0.2); color:#ff4b4b;">different Bios version</mark> than current (preferably downgrade).</li>
+                    <li>Format USB to <mark style="background:rgba(255,165,0,0.2); color:orange;">FAT32</mark>.</li>
+                    <li><b>Flash Bios <mark style="color:#ff4b4b;">TWO TIMES</mark></b>, this is really important! No need for 2 different versions, just repeat the process twice.</li>
+                </ul>
+                <a href="https://streamable.com/5bgtkf" class="video-link" target="_blank">📺 Watch ASUS Tutorial</a>
+            </div>
+        </div>
+
+        <div id="MSI" class="tab-content">
+            <div class="card">
+                <ul>
+                    <li>Download a <mark style="background:rgba(255,75,75,0.2); color:#ff4b4b;">different Bios version</mark> than current.</li>
+                    <li>Format USB to <mark style="background:rgba(255,165,0,0.2); color:orange;">FAT32</mark>.</li>
+                    <li><b>Flash Bios <mark style="color:#ff4b4b;">TWO TIMES</mark></b> (repeat the same process twice).</li>
+                </ul>
+                <a href="https://streamable.com/i8xgwh" class="video-link" target="_blank">📺 Watch MSI Tutorial</a>
+            </div>
+        </div>
+
+        <div id="GIGABYTE" class="tab-content">
+            <div class="card">
+                <ul>
+                    <li>Download a different Bios version (preferably downgrade).</li>
+                    <li>Format USB to <b>FAT32</b>.</li>
+                    <li><b>Flash Bios <mark style="color:#ff4b4b;">TWO TIMES</mark></b> (Repeat the flash process twice).</li>
+                </ul>
+                <a href="https://streamable.com/nz6yv7" class="video-link" target="_blank">📺 Watch GIGABYTE Tutorial</a>
+            </div>
+        </div>
+
+        <div id="ASROCK" class="tab-content">
+            <div class="card">
+                <ul>
+                    <li>Download a different Bios version than current.</li>
+                    <li>Format USB to <b>FAT32</b>.</li>
+                    <li><b>Flash Bios <mark style="color:#ff4b4b;">TWO TIMES</mark></b>.</li>
+                </ul>
+                <a href="https://youtu.be/dUCWRqOdLUw" class="video-link" target="_blank">📺 Watch ASROCK Tutorial</a>
+            </div>
+        </div>
+
+        <h2>BIOS Configuration</h2>
+        
+        <div class="card">
+            <div class="hint hint-warning" style="margin-top: 0;">
+                <span>⚠️ <b>Valorant Requirement:</b> Do NOT disable Virtualization (VMX/SVM). Vanguard requires it for security features.</span>
+            </div>
+
+            <h3>Enable TPM</h3>
+            <ol>
+                <li>Enable <b>TPM (Security Device Support)</b> in BIOS Security Tab.</li>
+                <li>If AMD CPU, enable <b>fTPM</b>. If Intel, enable <b>PTT</b>.</li>
+            </ol>
+
+            <h3>Secure Boot & CSM</h3>
+            <ul>
+                <li><b>Secure Boot:</b> Enable and Restore Factory Boot Keys.</li>
+                <li><b>CSM:</b> <mark style="color:#ff4b4b;"><b>Disable CSM</b></mark> (failure to do so will cause serials to revert).</li>
+            </ul>
+        </div>
+
+        <h2>Confirm Correct Settings</h2>
+        <div class="card" style="border-left: 4px solid var(--accent);">
+            <ol>
+                <li>In Windows, run <code>msinfo32</code>. Check that <b>Secure Boot State</b> is <b>On</b>.</li>
+                <li>Run <code>tpm.msc</code>. It must say <b>"The TPM is present"</b>.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>

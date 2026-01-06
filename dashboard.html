@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carbon | Elite Driver Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #030303;
+            --sidebar-bg: #070708;
+            --sidebar-width: 290px;
+            --accent-pink: #ff007f;
+            --accent-pink-glow: rgba(255, 0, 127, 0.3);
+            --accent-red: #ff4b4b;
+            --text-dim: #555;
+            --border: rgba(255, 0, 127, 0.08);
+        }
+
+        ::-webkit-scrollbar { display: none; }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+            user-select: none;
+        }
+
+        /* --- SIDEBAR --- */
+        nav { 
+            width: var(--sidebar-width); 
+            background: var(--sidebar-bg); 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+            padding: 35px 22px; 
+            box-sizing: border-box;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        
+        .logo-section { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            gap: 14px; 
+            margin-bottom: 45px; 
+            cursor: pointer; 
+            text-align: center;
+        }
+        .logo-section img { 
+            width: 55px; 
+            filter: drop-shadow(0 0 15px var(--accent-pink-glow)); 
+            margin-bottom: 5px;
+        }
+        .logo-section span { 
+            font-weight: 900; 
+            font-size: 20px; 
+            letter-spacing: 1px; 
+            color: white;
+            text-transform: uppercase;
+        }
+        .logo-section span b { color: var(--accent-pink); }
+
+        .nav-label { 
+            font-size: 10px; 
+            font-weight: 800; 
+            color: #2a2a2e; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            margin: 25px 0 12px 8px; 
+        }
+        
+        .nav-item {
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 13px 18px; 
+            color: var(--text-dim);
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 700; 
+            border-radius: 14px; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; 
+            margin-bottom: 4px; 
+            border: 1px solid transparent; 
+            background: none; 
+            width: 100%; 
+            text-align: left;
+            opacity: 0;
+            animation: slideIn 0.5s ease forwards;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255, 0, 127, 0.03); border-color: rgba(255, 0, 127, 0.1); }
+        .nav-item.active { 
+            background: rgba(255, 0, 127, 0.06); 
+            color: var(--accent-pink); 
+            border: 1px solid rgba(255, 0, 127, 0.2);
+        }
+
+        .nav-item.critical { color: #888; border: 1px dashed rgba(255, 75, 75, 0.2); }
+        .nav-item.critical.active { background: rgba(255, 75, 75, 0.1); color: var(--accent-red); border-color: var(--accent-red); }
+
+        .nav-sub-item {
+            padding-left: 45px !important;
+            font-size: 12px !important;
+            position: relative;
+            margin-top: -2px;
+            margin-bottom: 6px;
+            color: #666;
+        }
+        .nav-sub-item::before {
+            content: "└";
+            position: absolute;
+            left: 25px;
+            color: var(--border);
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .nav-item.support { 
+            color: var(--accent-pink); 
+            margin-top: 10px; 
+            border: 1px solid rgba(255, 0, 127, 0.2); 
+            background: rgba(255, 0, 127, 0.02);
+            justify-content: center;
+        }
+        .nav-item.support:hover { background: var(--accent-pink); color: white; }
+
+        /* --- MAIN VIEW --- */
+        .main-wrapper { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            background: radial-gradient(circle at top right, rgba(255, 0, 127, 0.03), transparent); 
+        }
+        #content-frame { 
+            flex: 1; 
+            border: none; 
+            width: 100%; 
+            height: 100%; 
+            transition: opacity 0.4s; 
+        }
+
+        .mode-badge {
+            position: absolute; top: 30px; right: 40px; 
+            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border); backdrop-filter: blur(10px);
+            padding: 10px 20px; border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800; 
+            color: var(--accent-pink); z-index: 10; text-transform: uppercase; letter-spacing: 1.5px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .status-dot { width: 8px; height: 8px; background: #ff007f; border-radius: 50%; animation: pulse 2s infinite; }
+        
+        .footer-nav { margin-top: auto; padding-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* UPDATE: CLICKABLE KAYZN FOOTER */
+        .kayzn-footer { 
+            text-align: center; 
+            padding: 15px 0; 
+            border-top: 1px solid var(--border); 
+            margin-bottom: 10px; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .kayzn-footer:hover {
+            background: rgba(255, 0, 127, 0.05);
+        }
+        .kayzn-footer span { 
+            font-size: 10px; 
+            color: #333; 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            font-weight: 900; 
+            transition: 0.3s;
+        }
+        .kayzn-footer:hover span {
+            color: #ccc;
+        }
+        .kayzn-footer b { color: var(--accent-pink); }
+
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <nav>
+        <div class="logo-section" onclick="window.location.reload()">
+            <img src="Asset_1.png" id="nav-logo" alt="Logo">
+            <span>CARBON<b>.</b></span>
+        </div>
+        
+        <div class="nav-label">1# Windows Steps</div>
+        <button class="nav-item active" style="animation-delay: 0.1s" onclick="loadPage('welcome.html', this)">🏠 Instructions Spoofer</button>
+        <button class="nav-item" style="animation-delay: 0.2s" onclick="loadPage('reinstall.html', this)">💿 Windows Reinstall</button>
+        <button class="nav-item" style="animation-delay: 0.3s" onclick="loadPage('windows-setup.html', this)">🛠️ Windows Setup</button>
+
+        <div class="nav-label">2# BIOS & Security</div>
+        <button class="nav-item critical" style="animation-delay: 0.6s" onclick="loadPage('flashing-your-bios.html', this)">⚡ Flashing Your Bios</button>
+        <button class="nav-item nav-sub-item" style="animation-delay: 0.65s" onclick="loadPage('configuring-uefi-settings.html', this)">⚙️ Configuring UEFI settings</button>
+
+        <button class="nav-item" style="animation-delay: 0.7s" onclick="loadPage('downloads.html', this)">🚀 Download Loader</button>
+
+        <div class="nav-label">3# Spoof Protocol</div>
+        <button class="nav-item" style="animation-delay: 0.8s" onclick="loadPage('spoof.html', this)">💻 Spoof HWID</button>
+        <button class="nav-item" style="animation-delay: 0.9s" onclick="loadPage('device-setup.html', this)">📱 Device Setup (Required)</button>
+        <button class="nav-item" style="animation-delay: 1.0s" onclick="loadPage('after-spoofing.html', this)">🏁 After Spoofing</button>
+
+        <div class="footer-nav">
+            <button class="nav-item support" onclick="window.open('https://discord.gg/carbonhwid', '_blank')">💬 Support Discord</button>
+            <div class="kayzn-footer" onclick="loadPage('socials.html', null)">
+                <span>Made by <b>Kayzn</b></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="mode-badge">
+            <div class="status-dot"></div>
+            <span id="mode-display">CARBON: LOADING...</span>
+        </div>
+        <iframe src="welcome.html" id="content-frame"></iframe>
+    </div>
+
+    <script>
+        function loadPage(url, el) {
+            const frame = document.getElementById('content-frame');
+            
+            // Animation de fondu
+            frame.style.opacity = '0';
+            
+            setTimeout(() => {
+                frame.src = url;
+                frame.style.opacity = '1';
+            }, 300);
+
+            // Gestion de la classe active sur les boutons
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+        }
+
+        // Chargement des infos de session (LocalStorage)
+        window.onload = () => {
+            const ac = localStorage.getItem('selectedAC') || 'SPOOFER';
+            const cpu = localStorage.getItem('userCpu') || 'GENERIC';
+            const mobo = localStorage.getItem('userMobo') || 'GENERIC';
+            
+            const badge = document.getElementById('mode-display');
+            badge.innerText = `ACTIVE: ${ac} | ${cpu.toUpperCase()} | ${mobo.toUpperCase()}`;
+        };
+    </script>
+</body>
+</html>
