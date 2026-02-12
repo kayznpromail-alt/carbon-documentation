@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon | Auth Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #c0c0c0;
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Subtle background glow */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(255, 0, 127, 0.04) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #terminal {
+            width: 720px;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        #terminal::-webkit-scrollbar { width: 0; display: none; }
+
+        .ascii-art {
+            color: #ff007f;
+            font-size: 10px;
+            line-height: 1.2;
+            white-space: pre;
+            text-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
+            text-align: center;
+        }
+
+        .version-line {
+            color: #333;
+            font-size: 11px;
+            margin-top: 6px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .heart { color: #ff007f; }
+
+        .line {
+            font-size: 13px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .green  { color: #00ff88; text-shadow: 0 0 6px rgba(0,255,136,0.2); }
+        .red    { color: #ff4b4b; text-shadow: 0 0 6px rgba(255,75,75,0.2); }
+        .yellow { color: #ffcc00; }
+        .pink   { color: #ff007f; }
+        .white  { color: #ffffff; font-weight: bold; }
+        .dim    { color: #2a2a2a; }
+
+        /* Auth box */
+        .auth-box {
+            border: 1px solid #222;
+            margin: 18px 0;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .auth-box-header {
+            text-align: center;
+            padding: 12px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 6px;
+            border-bottom: 1px solid #222;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        .auth-box-body {
+            padding: 22px 25px;
+        }
+
+        .auth-input {
+            background: #0e0e0e;
+            border: 1px solid #222;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            padding: 11px 14px;
+            width: 100%;
+            outline: none;
+            margin-top: 10px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .auth-input:focus {
+            border-color: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.12);
+        }
+
+        .auth-input::placeholder { color: #2a2a2a; }
+
+        .auth-submit {
+            background: transparent;
+            border: 1px solid #ff007f;
+            color: #ff007f;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            padding: 11px 0;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: all 0.3s;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            display: block;
+            width: 100%;
+        }
+
+        .auth-submit:hover {
+            background: #ff007f;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.25);
+        }
+
+        .menu-item {
+            display: inline;
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #555;
+        }
+
+        .menu-item:hover { color: #ff007f; }
+        .menu-item.active { color: #ff007f; font-weight: bold; }
+
+        .footer {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #1a1a1a;
+            letter-spacing: 5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        .footer b { color: rgba(255, 0, 127, 0.4); }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <pre class="ascii-art">
+ ██████  █████  ██████  ██████   ██████  ███   ██
+██      ██   ██ ██   ██ ██   ██ ██    ██ ████  ██
+██      ███████ ██████  ██████  ██    ██ ██ ██ ██
+██      ██   ██ ██   ██ ██   ██ ██    ██ ██  ████
+ ██████ ██   ██ ██   ██ ██████   ██████  ██   ███
+        </pre>
+        <div class="version-line">v1.0 | made with <span class="heart">&lt;3</span></div>
+        <div id="output"></div>
+    </div>
+
+    <div class="footer">Made by <b>Kayzn</b></div>
+
+    <script>
+        const VALID_KEY = 'e2X02J-O4icms-X9m9T0-H3prfz-pSezxl-IDBBAx';
+        const output = document.getElementById('output');
+
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        function addLine(html) {
+            const div = document.createElement('div');
+            div.className = 'line';
+            div.innerHTML = html;
+            output.appendChild(div);
+            div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function addElement(el) {
+            output.appendChild(el);
+            el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        async function animateProgress(label, duration) {
+            duration = duration || 1800;
+            const div = document.createElement('div');
+            div.className = 'line';
+            output.appendChild(div);
+            const total = 40;
+            const step = duration / total;
+            for (let i = 0; i <= total; i++) {
+                const filled = '\u2588'.repeat(i);
+                const empty = '\u2591'.repeat(total - i);
+                const pct = Math.round((i / total) * 100);
+                div.innerHTML = '<span class="pink">[' + label + ']</span> [<span class="green">' + filled + '</span><span class="dim">' + empty + '</span>] <span class="white">' + pct + '%</span>';
+                await sleep(step);
+            }
+        }
+
+        async function spinnerLine(text, duration) {
+            duration = duration || 2000;
+            const div = document.createElement('div');
+            div.className = 'line';
+            output.appendChild(div);
+            const chars = ['\u28BE', '\u28BD', '\u28BB', '\u28BF', '\u287F', '\u28DF', '\u28EF', '\u28F7'];
+            let i = 0;
+            const start = Date.now();
+            return new Promise(function(resolve) {
+                const iv = setInterval(function() {
+                    div.innerHTML = '<span class="yellow">[~] ' + text + '</span>  ' + chars[i % chars.length];
+                    i++;
+                    if (Date.now() - start >= duration) {
+                        clearInterval(iv);
+                        div.innerHTML = '<span class="yellow">[~] ' + text + '</span>';
+                        resolve();
+                    }
+                }, 80);
+            });
+        }
+
+        /* =================== PHASE 1: INIT =================== */
+        async function phaseInit() {
+            await sleep(400);
+            await animateProgress('INIT', 2200);
+            await sleep(400);
+            addLine('');
+            addLine('<span class="white">[*] Welcome</span>');
+            await sleep(700);
+        }
+
+        /* =================== PHASE 2: AUTH BOX =================== */
+        async function phaseAuthMenu() {
+            addLine('');
+            var box = document.createElement('div');
+            box.className = 'auth-box';
+            box.id = 'main-auth-box';
+            box.innerHTML = '<div class="auth-box-header">AUTH</div><div class="auth-box-body" id="auth-body"></div>';
+            addElement(box);
+
+            var body = document.getElementById('auth-body');
+
+            // Spinner connecting
+            var connectDiv = document.createElement('div');
+            connectDiv.className = 'line';
+            body.appendChild(connectDiv);
+
+            var chars = ['\u28BE', '\u28BD', '\u28BB', '\u28BF', '\u287F', '\u28DF', '\u28EF', '\u28F7'];
+            var idx = 0;
+            await new Promise(function(resolve) {
+                var iv = setInterval(function() {
+                    connectDiv.innerHTML = '<span class="yellow">[~] Connecting...</span>  ' + chars[idx % chars.length];
+                    idx++;
+                    if (idx > 28) {
+                        clearInterval(iv);
+                        connectDiv.innerHTML = '<span class="yellow">[~] Connecting...</span>';
+                        resolve();
+                    }
+                }, 80);
+            });
+
+            await sleep(350);
+
+            // OK
+            var okDiv = document.createElement('div');
+            okDiv.className = 'line';
+            okDiv.innerHTML = '<span class="green">[+] OK!</span>';
+            body.appendChild(okDiv);
+            await sleep(600);
+
+            // Menu
+            var menuDiv = document.createElement('div');
+            menuDiv.className = 'line';
+            menuDiv.style.marginTop = '16px';
+            menuDiv.innerHTML = '<span class="dim">&gt;</span> <span class="menu-item" id="m-login" onclick="switchView(\'login\')">Login</span> <span class="dim">|</span> <span class="menu-item active" id="m-license" onclick="switchView(\'license\')">License</span> <span class="dim">|</span> <span class="menu-item" id="m-register" onclick="switchView(\'register\')">Register</span>';
+            body.appendChild(menuDiv);
+
+            await sleep(300);
+
+            // Separator
+            var sep = document.createElement('div');
+            sep.style.borderTop = '1px solid #1a1a1a';
+            sep.style.margin = '16px 0 0 0';
+            body.appendChild(sep);
+
+            // View container
+            var viewContainer = document.createElement('div');
+            viewContainer.id = 'view-container';
+            viewContainer.style.marginTop = '16px';
+            body.appendChild(viewContainer);
+
+            // Default: show license view
+            renderLicenseView();
+        }
+
+        /* =================== VIEWS =================== */
+        window.switchView = function(view) {
+            // Update menu active state
+            document.querySelectorAll('.menu-item').forEach(function(el) { el.classList.remove('active'); });
+            var target = document.getElementById('m-' + view);
+            if (target) target.classList.add('active');
+
+            if (view === 'license') renderLicenseView();
+            else if (view === 'login') renderLoginView();
+            else if (view === 'register') renderRegisterView();
+        };
+
+        function renderLicenseView() {
+            var container = document.getElementById('view-container');
+            container.innerHTML = '';
+
+            var label = document.createElement('div');
+            label.className = 'line';
+            label.innerHTML = '<span class="white">License Key:</span>';
+            container.appendChild(label);
+
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'auth-input';
+            input.placeholder = 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-XXXXX';
+            input.id = 'license-input';
+            input.spellcheck = false;
+            input.autocomplete = 'off';
+            container.appendChild(input);
+
+            var btn = document.createElement('button');
+            btn.className = 'auth-submit';
+            btn.textContent = 'Submit';
+            btn.onclick = validateKey;
+            container.appendChild(btn);
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') validateKey();
+            });
+
+            setTimeout(function() { input.focus(); }, 100);
+        }
+
+        function renderLoginView() {
+            var container = document.getElementById('view-container');
+            container.innerHTML = '';
+
+            var l1 = document.createElement('div');
+            l1.className = 'line';
+            l1.innerHTML = '<span class="white">Username:</span>';
+            container.appendChild(l1);
+
+            var i1 = document.createElement('input');
+            i1.type = 'text';
+            i1.className = 'auth-input';
+            i1.placeholder = 'Enter username';
+            i1.spellcheck = false;
+            container.appendChild(i1);
+
+            var l2 = document.createElement('div');
+            l2.className = 'line';
+            l2.style.marginTop = '12px';
+            l2.innerHTML = '<span class="white">Password:</span>';
+            container.appendChild(l2);
+
+            var i2 = document.createElement('input');
+            i2.type = 'password';
+            i2.className = 'auth-input';
+            i2.placeholder = 'Enter password';
+            container.appendChild(i2);
+
+            var btn = document.createElement('button');
+            btn.className = 'auth-submit';
+            btn.textContent = 'Login';
+            btn.onclick = function() {
+                var err = document.getElementById('login-error');
+                if (err) err.remove();
+                var errDiv = document.createElement('div');
+                errDiv.className = 'line';
+                errDiv.id = 'login-error';
+                errDiv.style.marginTop = '12px';
+                errDiv.innerHTML = '<span class="red">[!] Use a license key to authenticate</span>';
+                container.appendChild(errDiv);
+            };
+            container.appendChild(btn);
+
+            setTimeout(function() { i1.focus(); }, 100);
+        }
+
+        function renderRegisterView() {
+            var container = document.getElementById('view-container');
+            container.innerHTML = '';
+
+            var info = document.createElement('div');
+            info.className = 'line';
+            info.style.marginTop = '5px';
+            info.innerHTML = '<span class="yellow">[~] Registration is currently closed</span>';
+            container.appendChild(info);
+
+            var info2 = document.createElement('div');
+            info2.className = 'line';
+            info2.innerHTML = '<span class="dim">Contact support to obtain a license key</span>';
+            container.appendChild(info2);
+        }
+
+        /* =================== KEY VALIDATION =================== */
+        async function validateKey() {
+            var input = document.getElementById('license-input');
+            var key = input.value.trim();
+
+            if (key !== VALID_KEY) {
+                var existing = document.getElementById('key-error');
+                if (existing) existing.remove();
+                var errDiv = document.createElement('div');
+                errDiv.className = 'line';
+                errDiv.id = 'key-error';
+                errDiv.style.marginTop = '12px';
+                errDiv.innerHTML = '<span class="red">[!] Invalid license key</span>';
+                document.getElementById('view-container').appendChild(errDiv);
+                input.style.borderColor = '#ff4b4b';
+                input.style.boxShadow = '0 0 10px rgba(255,75,75,0.15)';
+                input.value = '';
+                input.focus();
+                setTimeout(function() {
+                    input.style.borderColor = '#222';
+                    input.style.boxShadow = 'none';
+                }, 2000);
+                return;
+            }
+
+            // === VALID KEY: Launch sequence ===
+            var authBox = document.getElementById('main-auth-box');
+            if (authBox) authBox.remove();
+
+            addLine('');
+            addLine('<span class="green">[+] License key accepted</span>');
+            await sleep(500);
+
+            addLine('');
+            await spinnerLine('Validating license...', 1500);
+            await sleep(250);
+            addLine('<span class="green">[+] Valid</span>');
+            await sleep(400);
+
+            await spinnerLine('Connecting to server...', 1800);
+            await sleep(250);
+            addLine('<span class="green">[+] Connected</span>');
+            await sleep(400);
+
+            await animateProgress('AUTH', 2000);
+            await sleep(400);
+
+            addLine('<span class="green">[+] Session initialized</span>');
+            await sleep(250);
+            addLine('<span class="green">[+] Modules loaded</span>');
+            await sleep(250);
+            addLine('<span class="green">[+] Token generated</span>');
+            await sleep(500);
+
+            addLine('');
+            addLine('<span class="white">[*] Access granted</span>');
+            await sleep(300);
+            addLine('<span class="dim">Redirecting...</span>');
+
+            await sleep(2500);
+            window.location.href = 'dashboard.html';
+        }
+
+        /* =================== START =================== */
+        (async function() {
+            await phaseInit();
+            await phaseAuthMenu();
+        })();
+    </script>
+</body>
+</html>
