@@ -1,28 +1,8 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import Anthropic from '@anthropic-ai/sdk';
+import { filterEmptyTextBlocks } from '../utils/filterEmptyTextBlocks.js';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-/**
- * Supprime les blocs texte vides d'un tableau de messages Anthropic.
- * Corrige l'erreur "text content blocks must be non-empty".
- */
-function filterEmptyTextBlocks(messages) {
-  return messages
-    .map(msg => {
-      if (!Array.isArray(msg.content)) {
-        // Contenu string simple : on le garde seulement s'il est non-vide
-        if (typeof msg.content === 'string' && msg.content.trim() === '') return null;
-        return msg;
-      }
-      const filtered = msg.content.filter(
-        block => block.type !== 'text' || (block.text && block.text.trim().length > 0)
-      );
-      if (filtered.length === 0) return null;
-      return { ...msg, content: filtered };
-    })
-    .filter(Boolean);
-}
 
 export default {
   data: new SlashCommandBuilder()
@@ -45,14 +25,22 @@ export default {
       {
         role: 'user',
         content: [
-          { type: 'text', text: `Génère un titre court et une description pour un embed Discord sur : ${sujet}` },
-          // Le contexte peut être vide si l'utilisateur ne le fournit pas
-          { type: 'text', text: contexte },
+          {
+            type: 'text',
+            text: `Génère un titre court et une description pour un embed Discord sur : ${sujet}`,
+            cache_control: { type: 'ephemeral' },
+          },
+          // contexte est optionnel — peut être '' et produirait une erreur sans le filtre
+          {
+            type: 'text',
+            text: contexte,
+            cache_control: { type: 'ephemeral' },
+          },
         ],
       },
     ];
 
-    // Filtre les blocs texte vides avant l'appel API
+    // Filtre les blocs vides (avec ou sans cache_control) avant l'appel API
     const messages = filterEmptyTextBlocks(rawMessages);
 
     const response = await anthropic.messages.create({
